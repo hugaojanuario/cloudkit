@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 
 	"github.com/hugaojanuario/cloudkit/internal/s3client"
 )
@@ -9,8 +10,11 @@ import (
 func main() {
 	ctx := context.Background()
 
-	client := s3client.NewClient(ctx)
-	s3client.CreateBucket(client, ctx)
-	s3client.ListBucket(client, ctx)
+	client, err := s3client.NewClient(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+	s3client.CreateBucket(ctx, client)
+	s3client.ListBucket(ctx, client)
 
 }
