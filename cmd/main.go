@@ -15,11 +15,15 @@ func main() {
 		log.Fatal(err)
 	}
 	s3client.CreateBucket(ctx, client)
-	s3client.ListBucket(ctx, client)
+	s3client.ListBuckets(ctx, client)
 
 	bucket := "my-bucket-for-test-2"
 	filePath := "C:\\Users\\hugo.santariosi\\GolandProjects\\cloudkit\\teste.txt"
 	if err := s3client.Upload(ctx, client, bucket, filePath); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := s3client.ListObjects(ctx, client, bucket); err != nil {
 		log.Fatal(err)
 	}
 

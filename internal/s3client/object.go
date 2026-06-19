@@ -30,3 +30,20 @@ func Upload(ctx context.Context, s3Client *s3.Client, bucket, filePath string) e
 	fmt.Printf("upload concluído: %s -> %s/%s\n", filePath, bucket, key)
 	return nil
 }
+
+func ListObjects(ctx context.Context, s3Client *s3.Client, bucket string) error {
+	input := &s3.ListObjectsV2Input{
+		Bucket: aws.String(bucket),
+	}
+
+	output, err := s3Client.ListObjectsV2(ctx, input)
+	if err != nil {
+		return fmt.Errorf("erro ao listar objetos: %w", err)
+	}
+
+	for _, item := range output.Contents {
+		fmt.Printf("Nome: %s | Tamanho: %d bytes \n", aws.ToString(item.Key), aws.ToInt64(item.Size))
+	}
+
+	return nil
+}

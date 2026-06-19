@@ -23,7 +23,7 @@ func CreateBucket(ctx context.Context, s3Client *s3.Client) error {
 	return nil
 }
 
-func ListBucket(ctx context.Context, s3Client *s3.Client) error {
+func ListBuckets(ctx context.Context, s3Client *s3.Client) error {
 	out, err := s3Client.ListBuckets(ctx, &s3.ListBucketsInput{})
 	if err != nil {
 		return fmt.Errorf("erro ao carregar as s3 buckets: %w", err)
