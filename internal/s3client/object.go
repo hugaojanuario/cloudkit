@@ -3,6 +3,7 @@ package s3client
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 
@@ -44,6 +45,30 @@ func ListObjects(ctx context.Context, s3Client *s3.Client, bucket string) error 
 	for _, item := range output.Contents {
 		fmt.Printf("Nome: %s | Tamanho: %d bytes \n", aws.ToString(item.Key), aws.ToInt64(item.Size))
 	}
+
+	return nil
+}
+
+func GetObject(ctx context.Context, s3Client *s3.Client, bucket, filePath string) error {
+	key := filepath.Base(filePath)
+
+	input := &s3.GetObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(key),
+	}
+
+	resp, err := s3Client.GetObject(ctx, input)
+	if err != nil {
+		return fmt.Errorf("erro ao baixar o objeto: %w", err)
+	}
+	defer resp.Body.Close()
+
+	content, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("erro ao ler o corpo da resposta: %w", err)
+	}
+
+	fmt.Printf("Conteúdo recuperado (%d bytes):\n%s\n", aws.ToInt64(resp.ContentLength), string(content))
 
 	return nil
 }
