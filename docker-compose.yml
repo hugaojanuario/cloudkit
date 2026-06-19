@@ -1,0 +1,7 @@
+services:
+  ministack:
+    image: nahuelnucera/ministack
+    container_name: ministack
+    ports:
+      - "4566:4566"
+    privileged: true
