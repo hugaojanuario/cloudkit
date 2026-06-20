@@ -2,37 +2,68 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 
+	"github.com/hugaojanuario/cloudkit/internal/awsconfig"
 	"github.com/hugaojanuario/cloudkit/internal/s3client"
+	"github.com/hugaojanuario/cloudkit/internal/sqsclient"
 )
 
 func main() {
+	//Setup AWS
 	ctx := context.Background()
-
-	client, err := s3client.NewClient(ctx)
+	cfg, err := awsconfig.Load(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := s3client.CreateBucket(ctx, client); err != nil {
+
+	//S3
+	s3c := s3client.NewClient(cfg)
+
+	bucket := "my-bucket-for-test"
+	filePath := "teste.txt"
+
+	if err := s3client.CreateBucket(ctx, s3c); err != nil {
 		log.Fatal(err)
 	}
-	if err := s3client.ListBuckets(ctx, client); err != nil {
+	if err := s3client.ListBuckets(ctx, s3c); err != nil {
 		log.Fatal(err)
 	}
 
-	bucket := "my-bucket-for-test-2"
-	filePath := "C:\\Users\\hugo.santariosi\\GolandProjects\\cloudkit\\teste.txt"
-	if err := s3client.Upload(ctx, client, bucket, filePath); err != nil {
+	if err := s3client.Upload(ctx, s3c, bucket, filePath); err != nil {
 		log.Fatal(err)
 	}
 
-	if err := s3client.ListObjects(ctx, client, bucket); err != nil {
+	if err := s3client.ListObjects(ctx, s3c, bucket); err != nil {
 		log.Fatal(err)
 	}
 
-	if err := s3client.GetObject(ctx, client, bucket, filePath); err != nil {
+	if err := s3client.GetObject(ctx, s3c, bucket, filePath); err != nil {
 		log.Fatal(err)
 	}
+
+	//SQS
+	sqsc := sqsclient.NewClient(cfg)
+
+	queueName := "my-queue-for-test"
+
+	queueURL, err := sqsclient.CreateQueue(ctx, sqsc, queueName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("fila criada:", queueURL)
+
+	message, err := sqsclient.SendMessage(ctx, sqsc, queueURL, "Hello World")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("messagem enviada com sucesso - MessageId: ", message)
+
+	receive, err := sqsclient.Receive(ctx, sqsc, queueURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("mensagem recebida com sucesso - Message: ", receive)
 
 }
