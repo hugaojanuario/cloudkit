@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/hugaojanuario/cloudkit/internal/awsconfig"
 	"github.com/hugaojanuario/cloudkit/internal/s3client"
 	"github.com/hugaojanuario/cloudkit/internal/sqsclient"
@@ -65,5 +66,16 @@ func main() {
 		log.Fatal(err)
 	}
 	fmt.Println("mensagem recebida com sucesso - Message: ", receive)
+
+	for _, msg := range receive {
+		fmt.Println("body:", aws.ToString(msg.Body))
+		fmt.Println("receipt handle:", aws.ToString(msg.ReceiptHandle))
+
+		if err := sqsclient.Delete(ctx, sqsc, queueURL, aws.ToString(msg.ReceiptHandle)); err != nil {
+			log.Println("erro ao deletar:", err)
+			continue
+		}
+		fmt.Println("mensagem deletada com sucesso")
+	}
 
 }
