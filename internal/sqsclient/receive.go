@@ -9,7 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
 )
 
-func Receive(ctx context.Context, client *sqs.Client, queueUrl string) ([]types.Message, error) {
+func ReceiveMessage(ctx context.Context, client *sqs.Client, queueUrl string) ([]types.Message, error) {
 	input := &sqs.ReceiveMessageInput{
 		QueueUrl:            aws.String(queueUrl),
 		MaxNumberOfMessages: 10,

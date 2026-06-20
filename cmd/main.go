@@ -61,17 +61,19 @@ func main() {
 	}
 	fmt.Println("messagem enviada com sucesso - MessageId: ", message)
 
-	receive, err := sqsclient.Receive(ctx, sqsc, queueURL)
+	receive, err := sqsclient.ReceiveMessage(ctx, sqsc, queueURL)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("mensagem recebida com sucesso - Message: ", receive)
+	if len(receive) == 0 {
+		fmt.Println("nenhuma mensagem na fila")
+	}
 
 	for _, msg := range receive {
 		fmt.Println("body:", aws.ToString(msg.Body))
 		fmt.Println("receipt handle:", aws.ToString(msg.ReceiptHandle))
 
-		if err := sqsclient.Delete(ctx, sqsc, queueURL, aws.ToString(msg.ReceiptHandle)); err != nil {
+		if err := sqsclient.DeleteMessage(ctx, sqsc, queueURL, aws.ToString(msg.ReceiptHandle)); err != nil {
 			log.Println("erro ao deletar:", err)
 			continue
 		}

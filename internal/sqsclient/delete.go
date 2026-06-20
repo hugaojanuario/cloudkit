@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 )
 
-func Delete(ctx context.Context, client *sqs.Client, queueURL string, receiptHandle string) error {
+func DeleteMessage(ctx context.Context, client *sqs.Client, queueURL string, receiptHandle string) error {
 	input := &sqs.DeleteMessageInput{
 		QueueUrl:      aws.String(queueURL),
 		ReceiptHandle: aws.String(receiptHandle),
