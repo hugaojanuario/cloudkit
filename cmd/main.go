@@ -86,6 +86,7 @@ func main() {
 
 	nameSecret := "my-secret"
 	valueSecret := `{"username":"admin","password":"1234"}`
+	var force bool
 
 	arn, err := smclient.CreateSecret(ctx, smc, nameSecret, valueSecret)
 	if err != nil {
@@ -104,4 +105,9 @@ func main() {
 		log.Fatal(err)
 	}
 	fmt.Println("valor da secret:", value)
+
+	if err := smclient.DeleteSecret(ctx, smc, nameSecret, force); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("secret deletada com sucesso")
 }

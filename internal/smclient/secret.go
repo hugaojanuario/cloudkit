@@ -42,3 +42,24 @@ func ListSecrets(ctx context.Context, client *secretsmanager.Client) ([]string, 
 	}
 	return names, nil
 }
+
+func DeleteSecret(ctx context.Context, client *secretsmanager.Client, name string, force bool) error {
+	var input *secretsmanager.DeleteSecretInput
+
+	if force {
+		input = &secretsmanager.DeleteSecretInput{
+			SecretId:                   aws.String(name),
+			ForceDeleteWithoutRecovery: aws.Bool(true),
+		}
+	} else {
+		input = &secretsmanager.DeleteSecretInput{
+			SecretId: aws.String(name),
+		}
+	}
+
+	_, err := client.DeleteSecret(ctx, input)
+	if err != nil {
+		return fmt.Errorf("erro ao deletar a secret: %w", err)
+	}
+	return nil
+}
