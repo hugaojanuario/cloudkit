@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/hugaojanuario/cloudkit/internal/awsconfig"
 	"github.com/hugaojanuario/cloudkit/internal/s3client"
+	"github.com/hugaojanuario/cloudkit/internal/smclient"
 	"github.com/hugaojanuario/cloudkit/internal/sqsclient"
 )
 
@@ -80,4 +81,27 @@ func main() {
 		fmt.Println("mensagem deletada com sucesso")
 	}
 
+	//Secrety Manager
+	smc := smclient.NewClient(cfg)
+
+	nameSecret := "my-secret"
+	valueSecret := `{"username":"admin","password":"1234"}`
+
+	arn, err := smclient.CreateSecret(ctx, smc, nameSecret, valueSecret)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("secret criado: ", arn)
+
+	names, err := smclient.ListSecrets(ctx, smc)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("secrets existentes:", names)
+
+	value, err := smclient.GetSecret(ctx, smc, nameSecret)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("valor da secret:", value)
 }
