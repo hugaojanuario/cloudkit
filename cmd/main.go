@@ -7,6 +7,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/hugaojanuario/cloudkit/internal/awsconfig"
+	"github.com/hugaojanuario/cloudkit/internal/iamclient"
 	"github.com/hugaojanuario/cloudkit/internal/s3client"
 	"github.com/hugaojanuario/cloudkit/internal/smclient"
 	"github.com/hugaojanuario/cloudkit/internal/sqsclient"
@@ -110,4 +111,33 @@ func main() {
 		log.Fatal(err)
 	}
 	fmt.Println("secret deletada com sucesso")
+
+	//IAM
+	iamc := iamclient.NewClient(cfg)
+
+	usernameIam := "hugojanuario_"
+
+	userArn, err := iamclient.CreateUser(ctx, iamc, usernameIam)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("usuarioa criado com sucesso: ", userArn)
+
+	user, err := iamclient.GetUser(ctx, iamc, usernameIam)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("usuario encontrado: ", user)
+
+	users, err := iamclient.ListUser(ctx, iamc)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("usuarios: ", users)
+
+	if err := iamclient.DeleteUser(ctx, iamc, usernameIam); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("usuario deletado com sucesso .")
+
 }
