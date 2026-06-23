@@ -113,6 +113,7 @@ func main() {
 	fmt.Println("secret deletada com sucesso")
 
 	//IAM
+	//- User
 	iamc := iamclient.NewClient(cfg)
 
 	usernameIam := "hugojanuario_"
@@ -139,5 +140,41 @@ func main() {
 		log.Fatal(err)
 	}
 	fmt.Println("usuario deletado com sucesso .")
+
+	//- Role
+	trustPolicy := `{
+		"Version": "2012-10-17",
+		"Statement": [
+			{
+				"Effect": "Allow",
+				"Principal": {"Service": "lambda.amazonaws.com"},
+				"Action": "sts:AssumeRole"
+			}
+		]
+	}`
+	roleName := "my-role"
+
+	roleArn, err := iamclient.CreateRole(ctx, iamc, roleName, trustPolicy)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("role criada com sucesso: ", roleArn)
+
+	getRole, err := iamclient.GetRole(ctx, iamc, roleName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("role: ", getRole)
+
+	listRole, err := iamclient.ListRole(ctx, iamc)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("roles: ", listRole)
+
+	if err := iamclient.DeleteRole(ctx, iamc, roleName); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("role deletada com sucesso .")
 
 }
