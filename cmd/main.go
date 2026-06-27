@@ -7,6 +7,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/hugaojanuario/cloudkit/internal/awsconfig"
+	"github.com/hugaojanuario/cloudkit/internal/eksclient"
 	"github.com/hugaojanuario/cloudkit/internal/iamclient"
 	"github.com/hugaojanuario/cloudkit/internal/s3client"
 	"github.com/hugaojanuario/cloudkit/internal/smclient"
@@ -176,5 +177,35 @@ func main() {
 		log.Fatal(err)
 	}
 	fmt.Println("role deletada com sucesso .")
+
+	//EKS
+	eksc := eksclient.NewClient(cfg)
+
+	clusterName := "my-cluster"
+	clusterRoleArn := "arn:aws:iam::000000000000:role/eks-cluster-role"
+	subnetIds := []string{"subnet-12345678", "subnet-87654321"}
+
+	clusterArn, err := eksclient.CreateCluster(ctx, eksc, clusterName, clusterRoleArn, subnetIds)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("cluster criado com sucesso: ", clusterArn)
+
+	describeCluster, err := eksclient.DescribeCluster(ctx, eksc, clusterName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("cluster encontrado: ", describeCluster)
+
+	clusters, err := eksclient.ListCluster(ctx, eksc)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("clusters: ", clusters)
+
+	if err := eksclient.DeleteCluster(ctx, eksc, clusterName); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("cluster deletado com sucesso .")
 
 }

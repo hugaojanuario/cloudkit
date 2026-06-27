@@ -40,3 +40,13 @@ func ListCluster(ctx context.Context, client *eks.Client) ([]string, error) {
 	}
 	return output.Clusters, nil
 }
+
+func DeleteCluster(ctx context.Context, client *eks.Client, nameCluster string) error {
+	_, err := client.DeleteCluster(ctx, &eks.DeleteClusterInput{
+		Name: aws.String(nameCluster),
+	})
+	if err != nil {
+		return fmt.Errorf("erro ao deletar o cluster: %w", err)
+	}
+	return nil
+}
