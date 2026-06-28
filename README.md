@@ -1,5 +1,7 @@
 # cloudkit
 
+in building...
+
 CLI em Go que interage com serviços AWS reais via `aws-sdk-go-v2`, rodando 100% local com **MiniStack** — um emulador AWS open-source, sem conta, sem login e sem custo. O objetivo é exercitar os serviços AWS mais usados no dia a dia (S3, SQS, Secrets Manager, IAM e EKS) num ambiente que qualquer pessoa pode subir com um `docker run`.
 
 ## Por que MiniStack
